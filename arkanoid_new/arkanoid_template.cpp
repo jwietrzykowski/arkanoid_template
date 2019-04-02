@@ -9,6 +9,8 @@
 #include "Rectangle.h"
 #include "Circle.h"
 
+std::vector<Inf::Physics*> objs;
+
 const int GAME_LOGIC_REFRESH_TIME = 10;
 
 /* GLUT callback Handlers */
@@ -29,15 +31,24 @@ void resize(int width, int height)
 
 void gameLogic(int value)
 {
+	int curTime = glutGet(GLUT_ELAPSED_TIME);
 	if (value == 0)
 	{
-
+		for (auto it = objs.begin(); it != objs.end(); ++it) {
+			(*it)->initParams(curTime, Inf::Vec2d(-0.5, 0), Inf::Vec2d(0, -0.5));
+		}
 	}
 	else
 	{
-
+		objs.front()->update(curTime);
+		//for (auto it = objs.begin(); it != objs.end(); ++it) {
+		//	(*it)->update(curTime);
+		//}
+		for (auto it = objs.begin() + 1; it != objs.end(); ++it) {
+			objs.front()->collision(**it);
+		}
 	}
-
+	glutPostRedisplay();
 	glutTimerFunc(GAME_LOGIC_REFRESH_TIME, gameLogic, 1);
 }
 
@@ -53,8 +64,9 @@ void display()
 
 	glPushMatrix();
 	{
-		/*paddle.Draw();
-		ball.Draw();*/
+		for (auto it = objs.begin(); it != objs.end(); ++it) {
+			(*it)->draw();
+		}
 	}
 	glPopMatrix();
 
@@ -71,7 +83,7 @@ void keyboard(unsigned char key_pressed, int mouse_x, int mouse_y)
 /* helper functions for settings options and parameters */
 void initGLUTScene(const char* window_name)
 {
-	glutInitWindowSize(1200, 1000);
+	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(40, 40);
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
@@ -98,6 +110,11 @@ void setCallbackFunctions()
 
 void setObjectsPositions()
 {
+	objs.push_back(new Inf::Rectangle(0, 0, 1, 0.5, 1.0, 0.0, 0.0));
+	objs.push_back(new Inf::Rectangle(0, -2, 6.0, 0.5, 0.0, 1.0, 0.0));
+	objs.push_back(new Inf::Rectangle(0, 2, 6.0, 0.5, 0.0, 1.0, 0.0));
+	objs.push_back(new Inf::Rectangle(-2, 0, 0.5, 6.0, 0.0, 1.0, 0.0));
+	objs.push_back(new Inf::Rectangle(2, 0, 0.5, 6.0, 0.0, 1.0, 0.0));
 }
 
 int main(int argc, char *argv[])
@@ -111,6 +128,10 @@ int main(int argc, char *argv[])
 	setObjectsPositions();
 
 	glutMainLoop();
+
+	for (auto it = objs.begin(); it != objs.end(); ++it) {
+		delete *it;
+	}
 
 	return 0;
 }

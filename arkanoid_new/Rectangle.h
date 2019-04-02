@@ -7,7 +7,7 @@ namespace Inf
 	class Rectangle : public Physics
 	{
 	public:
-		Rectangle(double iwidth, double iheight, double red, double green, double blue);
+		Rectangle(double ix, double iy, double iwidth, double iheight, double red, double green, double blue);
 		~Rectangle();
 
 		void draw();

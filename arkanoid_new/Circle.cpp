@@ -1,12 +1,10 @@
 #define _USE_MATH_DEFINES
-
-#include "Circle.h"
+#include <cmath>
 
 #define NDEBUG
 #include <GL/freeglut.h>
 
-
-#include <cmath>
+#include "Circle.h"
 
 using namespace Inf;
 
@@ -14,10 +12,7 @@ Circle::Circle(double irad, double red, double green, double blue)
 	: Physics(),
 	rad(irad)
 {
-	//setBorders(
-	//	-rad, -rad,
-	//	rad, rad
-	//	);
+	setBBox(BBox(Vec2d(-rad, -rad), Vec2d(rad, rad)));
 
 	cR = red;
 	cG = green;
@@ -39,7 +34,7 @@ void Circle::draw()
 
 			glColor3d(cR, cG, cB);
 
-			glBegin(GL_TRIANGLE_FAN);
+			glBegin(GL_POLYGON);
 			{
 
 				for (int i = 0; i <= 360; i++)

@@ -1,18 +1,19 @@
-#include "Rectangle.h"
+#include <iostream>
 
 #define NDEBUG
 #include <GL/freeglut.h>
 
+#include "Rectangle.h"
+
 using namespace Inf;
 
-Rectangle::Rectangle(double iwidth, double iheight, double red, double green, double blue) 
+Rectangle::Rectangle(double ix, double iy, double iwidth, double iheight, double red, double green, double blue)
 	: Physics(),
 	width(iwidth), height(iheight)
 {
-	//setBorders(
-	//	-width / 2, -height/2,
-	//	width / 2, height / 2
-	//	);
+	setBBox(BBox(Vec2d(-width / 2, -height / 2), Vec2d(width / 2, height / 2)));
+
+	setPosition(ix, iy);
 
 	cR = red;
 	cG = green;

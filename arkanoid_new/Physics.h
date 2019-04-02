@@ -2,14 +2,14 @@
 
 #include <vector>
 
-#include "Figure.h" // #include "Figura.h"
+#include "Figure.h"
 
 namespace Inf
 {
 
-	struct Border {
-		Border() : lowerLeftPt(0, 0), upperRightPt(0, 0) {}
-		Border(const Vec2d &ilowerLeftPt, const Vec2d &iupperRightPt) :
+	struct BBox {
+		BBox() : lowerLeftPt(0, 0), upperRightPt(0, 0) {}
+		BBox(const Vec2d &ilowerLeftPt, const Vec2d &iupperRightPt) :
 			lowerLeftPt(ilowerLeftPt), upperRightPt(iupperRightPt)
 		{}
 		Vec2d lowerLeftPt, upperRightPt;
@@ -17,31 +17,36 @@ namespace Inf
 
 	class Physics : public Figure
 	{
-	protected:
-		int prevTime; //czas ostatniej aktualizacji
-		Border border; //granice obiektu
-		//polozenie srodka masy - odziedziczone po Figure
-		Vec2d vel;
-		Vec2d grav;
-
 	public:
 		Physics();
 		~Physics();
 
-		//zmienia polozenie obiektu na podstawie aktualnego czasu
+		// changes position of the object using current time, velocity, and gravity.
 		void update(int curTime);
 		
-		//ustawia poczatkowy czas, predkosc oraz przyspieszenie
+		// sets initial time, velocity, and gravity
 		void initParams(int curTime, const Vec2d &iv, const Vec2d &ig);
 
-		//wykrywanie kolizji z innym obiektem i aktualizacja prêdkoœci (funkcja zwraca true gdy jest kolizja, a false w przeciwnym razie)
+		// detects whether there is a collision with X object and rebounds object if necessary
+		// returns true if collision occured
 		virtual bool collision(const Physics& X);
 
 	protected:
-		void setBorder(const Border &nborder);
+		void setBBox(const BBox &nborder);
 
+
+		// time of the last update
+		int prevTime;
+		// bounding box of the object
+		BBox border;
+		// position of the mass center - inherited from Figure
+
+		// velocity
+		Vec2d vel;
+		// gravity vector
+		Vec2d grav;
 	private:
-		//odbicie od sciany charakteryzowanej za pomoca normalnej
+		// rebound from the wall characterized by the normal vector
 		void rebound(const Vec2d &norm);
 	};
 }
