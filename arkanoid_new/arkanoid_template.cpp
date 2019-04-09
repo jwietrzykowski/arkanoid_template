@@ -34,9 +34,10 @@ void gameLogic(int value)
 	int curTime = glutGet(GLUT_ELAPSED_TIME);
 	if (value == 0)
 	{
-		for (auto it = objs.begin(); it != objs.end(); ++it) {
+		objs.front()->initParams(curTime, Inf::Vec2d(-2.0, 2.0), Inf::Vec2d(0, -1.0));
+		/*for (auto it = objs.begin(); it != objs.end(); ++it) {
 			(*it)->initParams(curTime, Inf::Vec2d(-0.5, 0), Inf::Vec2d(0, -0.5));
-		}
+		}*/
 	}
 	else
 	{

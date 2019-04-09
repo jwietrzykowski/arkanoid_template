@@ -9,9 +9,13 @@ using namespace Inf;
 
 
 Physics::Physics()
-	: Figure(0.5, 0.5, 0.5)
 {
 
+}
+
+Inf::Physics::Physics(const Vec2d &ipos, double icR, double icG, double icB, const BBox &ibbox)
+	: Figure(ipos, icR, icG, icB), bbox(ibbox)
+{
 }
 
 Physics::~Physics()
@@ -38,7 +42,7 @@ void Physics::initParams(int curTime, const Vec2d &iv, const Vec2d &ig)
 
 void Physics::setBBox(const BBox &nborder)
 {
-	border = nborder;
+	bbox = nborder;
 }
 
 
@@ -50,55 +54,56 @@ bool Physics::collision(const Physics& other)
 	bool flagCollision = false;
 
 	// coordinates of a recatangle that is an intersection of two rectangles
-	double minX = std::max(pos.x + border.lowerLeftPt.x, other.pos.x + other.border.lowerLeftPt.x);
-	double maxX = std::min(pos.x + border.upperRightPt.x, other.pos.x + other.border.upperRightPt.x);
-	double minY = std::max(pos.y + border.lowerLeftPt.y, other.pos.y + other.border.lowerLeftPt.y);
-	double maxY = std::min(pos.y + border.upperRightPt.y, other.pos.y + other.border.upperRightPt.y);
+	double minX = std::max(pos.x + bbox.lowerLeftPt.x, other.pos.x + other.bbox.lowerLeftPt.x);
+	double maxX = std::min(pos.x + bbox.upperRightPt.x, other.pos.x + other.bbox.upperRightPt.x);
+	double minY = std::max(pos.y + bbox.lowerLeftPt.y, other.pos.y + other.bbox.lowerLeftPt.y);
+	double maxY = std::min(pos.y + bbox.upperRightPt.y, other.pos.y + other.bbox.upperRightPt.y);
+	double intLenX = maxX - minX;
+	double intLenY = maxY - minY;
 
 	// relative velocity
 	Vec2d relVel = vel - other.vel;
-	Vec2d relPos = pos - other.pos;
 
-	// dot product of relative position and relative velocity
-	// if objects are moving closer to each other this value is greater than 0.0
-	// prevents multiple rebounds
-	double velPosDot = dot(relVel, relPos);
+	//if (maxX - minX > 0.0 && maxY - minY > 0.0) {
+	//	std::cout << "maxX - minX = " << maxX - minX << std::endl;
+	//	std::cout << "maxY - minY = " << maxY - minY << std::endl;
+	//	std::cout << "relVel = (" << relVel.x << ", " << relVel.y << ")" << std::endl;
+	//	std::cout << "vel = (" << vel.x << ", " << vel.y << ")" << std::endl;
+	//}
 
-	if (maxX - minX > 0.0 && maxY - minY > 0.0) {
-		std::cout << "maxX - minX = " << maxX - minX << std::endl;
-		std::cout << "maxY - minY = " << maxY - minY << std::endl;
-		std::cout << "velPosDot = " << velPosDot << std::endl;
-	}
-	// if the area of the intersection is greater than 0.0
-	if (maxX - minX > 0.0 && maxY - minY > 0.0/* && velPosDot < 0.0*/) {
-		std::cout << "Collision detected" << std::endl;
-
-		flagCollision = true;
-
+	if (intLenX > 0.0 && intLenY > 0.0) {
 		Vec2d norm(0, 0);
 
-		double intLenX = maxX - minX;
-		double intLenY = maxY - minY;
+		// collision on vertical wall
 		if (intLenY >= intLenX) {
-			// if intersection starts at left border
-			if (pos.x + border.lowerLeftPt.x < minX) {
+			// if intersection starts at right wall and relative horizontal velocity is positive
+			if (pos.x + bbox.lowerLeftPt.x < minX && relVel.x > 0.0) {
 				norm = Vec2d(-1.0, 0.0);
+				flagCollision = true;
 			}
-			else if (pos.x + border.upperRightPt.x > maxX) {
+			// if intersection starts at left wall and relative horizontal velocity is negative
+			else if (pos.x + bbox.upperRightPt.x > maxX && relVel.x < 0.0) {
 				norm = Vec2d(1.0, 0.0);
+				flagCollision = true;
 			}
 		}
+		// collision on horizontal edge
 		else {
-			if (pos.y + border.upperRightPt.y > maxY) {
+			// if intersection starts at lower wall and relative vertical velocity is negative
+			if (pos.y + bbox.upperRightPt.y > maxY && relVel.y < 0.0) {
 				norm = Vec2d(0.0, 1.0);
+				flagCollision = true;
 			}
-			else if (pos.y + border.lowerLeftPt.y < minY) {
+			// if intersection starts at upper wall and relative vertical velocity is positive
+			else if (pos.y + bbox.lowerLeftPt.y < minY && relVel.y > 0.0) {
 				norm = Vec2d(0.0, -1.0);
+				flagCollision = true;
 			}
 		}
-
-		std::cout << "norm = (" << norm.x << ", " << norm.y << ")" << std::endl;
-		rebound(norm);
+		if (flagCollision) {
+			//std::cout << "norm = (" << norm.x << ", " << norm.y << ")" << std::endl;
+			rebound(norm);
+		}
 	}
 
 	return flagCollision;
@@ -106,9 +111,8 @@ bool Physics::collision(const Physics& other)
 
 void Physics::rebound(const Vec2d &norm)
 {
-	std::cout << "vel = (" << vel.x << ", " << vel.y << ")" << std::endl;
 	double velNorm = dot(norm, vel);
-	std::cout << "velNorm = " << velNorm << std::endl;
+	// reverse movement direction in normal direction
 	vel = vel - 2 * velNorm * norm;
 }
 

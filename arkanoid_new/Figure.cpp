@@ -32,13 +32,14 @@ Vec2d Inf::cross(const Vec2d & v1, const Vec2d &v2)
 	return Vec2d();
 }
 
-Figure::Figure(double red, double green, double blue)
-	: cR(red), cG(green), cB(blue)
+Figure::Figure()
+	: pos(Vec2d(0.0, 0.0)), cR(0.0), cG(0.0), cB(0.0), theta(0.0), flagShow(true)
 {
-	pos.x = 0.0;
-	pos.y = 0.0;
-	rotZ = 0.0;
-	flagShow = true;
+}
+
+Figure::Figure(const Vec2d & ipos, double icR, double icG, double icB)
+	: pos(ipos), cR(icR), cG(icG), cB(icB), theta(0.0), flagShow(true)
+{
 }
 
 Figure::~Figure()
@@ -67,12 +68,12 @@ void Figure::setPosition(double x, double y)
 	pos.y = y;
 }
 
-void Figure::rotate(double drotZ)
+void Figure::rotate(double dtheta)
 {
-	rotZ += drotZ;
+	theta += dtheta;
 }
 
-void Figure::changeColour(double r, double g, double b)
+void Figure::changeColor(double r, double g, double b)
 {
 	cR = r;
 	cG = g;

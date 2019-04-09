@@ -8,15 +8,17 @@
 
 using namespace Inf;
 
-Circle::Circle(double irad, double red, double green, double blue)
-	: Physics(),
+Circle::Circle()
+	: rad(0.5)
+{
+
+}
+
+Circle::Circle(double ix, double iy, double irad, double red, double green, double blue)
+	: Physics(Vec2d(ix, iy), red, green, blue, BBox(Vec2d(-irad, -irad), Vec2d(irad, irad))),
 	rad(irad)
 {
-	setBBox(BBox(Vec2d(-rad, -rad), Vec2d(rad, rad)));
 
-	cR = red;
-	cG = green;
-	cB = blue;
 }
 
 Circle::~Circle()
@@ -30,7 +32,7 @@ void Circle::draw()
 		glPushMatrix();
 		{
 			glTranslated(pos.x, pos.y, 0.0);
-			glRotated(rotZ, 0.0, 0.0, 1.0);
+			glRotated(theta, 0.0, 0.0, 1.0);
 
 			glColor3d(cR, cG, cB);
 
@@ -39,11 +41,9 @@ void Circle::draw()
 
 				for (int i = 0; i <= 360; i++)
 				{
-					// 180 - pi
-					// i - degInRad
-
-					double degInRad = i*M_PI / 180;
-					glVertex2f(cos(degInRad)*rad, sin(degInRad)*rad);
+					// rotation angle in radians
+					double ang = i * M_PI / 180;
+					glVertex2f(cos(ang)*rad, sin(ang)*rad);
 				}
 			}
 			glEnd();

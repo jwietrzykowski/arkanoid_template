@@ -19,6 +19,7 @@ namespace Inf
 	{
 	public:
 		Physics();
+		Physics(const Vec2d &ipos, double icR, double icG, double icB, const BBox &ibbox);
 		~Physics();
 
 		// changes position of the object using current time, velocity, and gravity.
@@ -38,7 +39,7 @@ namespace Inf
 		// time of the last update
 		int prevTime;
 		// bounding box of the object
-		BBox border;
+		BBox bbox;
 		// position of the mass center - inherited from Figure
 
 		// velocity

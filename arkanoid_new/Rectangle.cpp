@@ -8,16 +8,10 @@
 using namespace Inf;
 
 Rectangle::Rectangle(double ix, double iy, double iwidth, double iheight, double red, double green, double blue)
-	: Physics(),
+	: Physics(Vec2d(ix, iy), red, green, blue, BBox(Vec2d(-iwidth / 2, -iheight / 2), Vec2d(iwidth / 2, iheight / 2))),
 	width(iwidth), height(iheight)
 {
-	setBBox(BBox(Vec2d(-width / 2, -height / 2), Vec2d(width / 2, height / 2)));
 
-	setPosition(ix, iy);
-
-	cR = red;
-	cG = green;
-	cB = blue;
 }
 
 Rectangle::~Rectangle()
@@ -31,7 +25,7 @@ void Rectangle::draw()
 		glPushMatrix();
 		{
 			glTranslated(pos.x, pos.y, 0.0);
-			glRotated(rotZ, 0.0, 0.0, 1.0);
+			glRotated(theta, 0.0, 0.0, 1.0);
 
 			glColor3d(cR, cG, cB);
 

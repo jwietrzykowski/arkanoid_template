@@ -7,7 +7,8 @@ namespace Inf
 	class Circle : public Physics
 	{
 	public:
-		Circle(double irad, double red, double green, double blue);
+		Circle();
+		Circle(double ix, double iy, double irad, double red, double green, double blue);
 		~Circle();
 
 		void draw();
